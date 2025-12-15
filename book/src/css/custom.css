@@ -1,0 +1,164 @@
+/**
+ * Any CSS included here will be global. The classic template
+ * bundles Infima by default. Infima is a CSS framework designed to
+ * work well for content-centric websites.
+ */
+
+/* You can override the default Infima variables here. */
+:root {
+  --ifm-color-primary: #2e8555;
+  --ifm-color-primary-dark: #29784c;
+  --ifm-color-primary-darker: #277148;
+  --ifm-color-primary-darkest: #205d3b;
+  --ifm-color-primary-light: #33925d;
+  --ifm-color-primary-lighter: #359962;
+  --ifm-color-primary-lightest: #3cad6e;
+  --ifm-code-font-size: 95%;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+}
+
+/* For readability concerns, you should choose a lighter palette in dark mode. */
+[data-theme='dark'] {
+  --ifm-color-primary: #25c2a0;
+  --ifm-color-primary-dark: #21af90;
+  --ifm-color-primary-darker: #1fa588;
+  --ifm-color-primary-darkest: #1a8870;
+  --ifm-color-primary-light: #29d5b0;
+  --ifm-color-primary-lighter: #32d8b4;
+  --ifm-color-primary-lightest: #4fddbf;
+  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+}
+
+/* Responsive Design Improvements */
+/* Mobile responsiveness for main content */
+@media (max-width: 768px) {
+  .container {
+    padding: 0 1rem;
+  }
+
+  /* Improve readability on small screens */
+  .markdown h1 {
+    font-size: 1.75rem;
+    line-height: 1.3;
+  }
+
+  .markdown h2 {
+    font-size: 1.5rem;
+    line-height: 1.35;
+  }
+
+  .markdown h3 {
+    font-size: 1.25rem;
+    line-height: 1.4;
+  }
+
+  /* Adjust sidebar for mobile */
+  .sidebar {
+    padding: 0.5rem;
+  }
+
+  /* Better table scrolling on mobile */
+  .markdown table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  /* Improve navigation on mobile */
+  .navbar__item {
+    padding: 0 0.5rem;
+  }
+
+  .navbar__link {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 576px) {
+  /* Further adjustments for very small screens */
+  .navbar__brand {
+    font-size: 0.9rem;
+  }
+
+  .navbar-sidebar__brand {
+    padding: 1rem;
+  }
+
+  /* Ensure proper spacing on small screens */
+  .hero__title {
+    font-size: 1.5rem;
+  }
+
+  .hero__subtitle {
+    font-size: 1rem;
+  }
+}
+
+/* Improve accessibility and readability */
+.markdown {
+  /* Ensure sufficient line height for readability */
+  line-height: 1.6;
+}
+
+/* Better focus indicators for accessibility */
+button:focus,
+a:focus,
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 2px solid var(--ifm-color-primary);
+  outline-offset: 2px;
+}
+
+/* Improve contrast for text */
+.markdown a {
+  text-decoration: underline;
+}
+
+/* Responsive images */
+.markdown img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Better code block presentation */
+.prism-code {
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+/* Improve sidebar navigation on all devices */
+.menu {
+  font-size: 0.9rem;
+}
+
+.menu__list {
+  margin-bottom: 1rem;
+}
+
+.menu__link {
+  padding: 0.4rem 0.75rem;
+}
+
+/* Better spacing for content sections */
+.padding-top--md {
+  padding-top: 2rem !important;
+}
+
+.padding-bottom--md {
+  padding-bottom: 2rem !important;
+}
+
+/* Adjust for print */
+@media print {
+  .navbar,
+  .sidebar,
+  .pagination-nav,
+  .theme-edit-this-page {
+    display: none;
+  }
+
+  .main-wrapper {
+    padding: 0;
+  }
+}

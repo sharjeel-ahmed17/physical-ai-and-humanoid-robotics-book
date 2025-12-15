@@ -9,6 +9,7 @@ const config = {
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
+
   url: 'https://github.com/sharjeel-ahmed17.github.io',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub Pages, this is usually '/<project-name>/'

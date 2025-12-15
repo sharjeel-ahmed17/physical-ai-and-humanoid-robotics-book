@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pip install -r requirements.txt)",
+      "Bash(python -c \"from src.api.main import app; print(''Import successful'')\")",
+      "Bash(npm run build)",
+      "Bash(timeout 5s cat /tmp/claude/tasks/b9cc923.output)",
+      "Bash(python -c \"import sys; print(sys.executable)\")",
+      "Bash(pip install psycopg2-binary)",
+      "Bash(python -m uvicorn src.api.main:app --host 0.0.0.0 --port 8000 --reload)",
+      "Bash(timeout 10 ping 127.0.0.1 -n 10)",
+      "Bash(find . -type f -name \"*.py\" -exec grep -l \"openai\\|OpenAI\" {} ;)",
+      "Bash(find . -name \"*.py\" -exec grep -l \"Agent\\|Tool\\|RunContext\\|Memory\\|agents\" {} ;)",
+      "Bash(find ./backend -name \"*.py\" -exec grep -l \"from agents\\|import agents\\|Agent\\|Tool\\|RunContext\\|Memory\\|Runner\\|RunConfig\" {} ;)",
+      "Bash(python -c \"from src.api.main import app; print(''Application imported successfully'')\")",
+      "Bash(python -m uvicorn src.api.main:app --host 0.0.0.0 --port 8000)",
+      "Bash(python test_openrouter_config.py)",
+      "Bash(curl -X POST http://localhost:8000/chat/chat -H \"Content-Type: application/json\" -d \"{\"\"query\"\": \"\"What is Physical AI?\"\", \"\"session_id\"\": \"\"test-session\"\", \"\"query_mode\"\": \"\"book-wide\"\"}\")"
+    ]
+  }
+}
