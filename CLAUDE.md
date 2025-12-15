@@ -208,3 +208,10 @@ Wait for consent; never auto-create ADRs. Group related decisions (stacks, authe
 
 ## Code Standards
 See `.specify/memory/constitution.md` for code quality, testing, performance, security, and architecture principles.
+
+## Active Technologies
+- Markdown for content, JavaScript/Node.js for Docusaurus framework (Node.js v18+) + Docusaurus v3.x, React, GitHub Pages (001-docusaurus-book-creation)
+- Static files hosted on GitHub Pages, no database required for basic textbook (001-docusaurus-book-creation)
+
+## Recent Changes
+- 001-docusaurus-book-creation: Added Markdown for content, JavaScript/Node.js for Docusaurus framework (Node.js v18+) + Docusaurus v3.x, React, GitHub Pages

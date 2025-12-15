@@ -1,0 +1,369 @@
+openapi: 3.0.0
+info:
+  title: RAG Chatbot API
+  description: API for the Integrated RAG Chatbot in the Physical AI & Humanoid Robotics book
+  version: 1.0.0
+servers:
+  - url: https://api.example.com/v1
+    description: Production server
+
+paths:
+  /chat/completions:
+    post:
+      summary: Create a chat completion
+      description: Send a user query and receive a response from the RAG chatbot
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatRequest'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatResponse'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '429':
+          description: Rate limit exceeded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /chat/conversations:
+    get:
+      summary: List conversations in a session
+      parameters:
+        - name: session_id
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: List of conversations
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  conversations:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ConversationSummary'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /chat/conversations/{conversation_id}:
+    get:
+      summary: Get a specific conversation
+      parameters:
+        - name: conversation_id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Conversation details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConversationDetail'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /content/search:
+    post:
+      summary: Search book content
+      description: Search for relevant content in the book based on user query
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchRequest'
+      responses:
+        '200':
+          description: Search results with relevant content
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+components:
+  schemas:
+    ChatRequest:
+      type: object
+      required:
+        - query
+        - session_id
+      properties:
+        query:
+          type: string
+          description: The user's query
+          example: "What are the main principles of humanoid robotics?"
+        session_id:
+          type: string
+          format: uuid
+          description: The session ID for conversation context
+          example: "a1b2c3d4-e5f6-7890-1234-567890abcdef"
+        query_mode:
+          type: string
+          enum: [book-wide, selected-text]
+          default: book-wide
+          description: The mode of the query
+        selected_text:
+          type: string
+          nullable: true
+          description: Text selected by the user (for selected-text mode)
+          example: "The main principles of humanoid robotics include..."
+        previous_context:
+          type: array
+          items:
+            $ref: '#/components/schemas/Message'
+          description: Previous conversation context for continuity
+
+    ChatResponse:
+      type: object
+      required:
+        - id
+        - response
+        - citations
+        - confidence
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: The response ID
+          example: "f0e9d8c7-b6a5-4321-fedc-ba9876543210"
+        response:
+          type: string
+          description: The chatbot's response
+          example: "The main principles of humanoid robotics include..."
+        citations:
+          type: array
+          items:
+            $ref: '#/components/schemas/Citation'
+          description: Citations to relevant book sections
+        confidence:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 1.0
+          description: Confidence score for the response
+          example: 0.95
+        response_time_ms:
+          type: integer
+          description: Time taken to generate the response in milliseconds
+          example: 1250
+        query_understood:
+          type: boolean
+          description: Whether the query was understood and answered from book content
+          example: true
+
+    Message:
+      type: object
+      properties:
+        role:
+          type: string
+          enum: [user, assistant]
+        content:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+
+    Citation:
+      type: object
+      properties:
+        content_id:
+          type: string
+          format: uuid
+          description: ID of the cited content
+          example: "c9b8a7f6-e5d4-3210-cdef-0987654321ab"
+        title:
+          type: string
+          description: Title of the cited section
+          example: "Introduction to Humanoid Robotics"
+        url:
+          type: string
+          description: URL to the cited section in the book
+          example: "/chapters/chapter-1/introduction"
+        hierarchy_path:
+          type: string
+          description: Hierarchical path of the cited content
+          example: "Chapter 1 / Introduction"
+        relevance_score:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 1.0
+          description: Relevance score of the citation
+          example: 0.87
+        snippet:
+          type: string
+          description: Relevant snippet from the cited content
+          example: "Humanoid robotics is a field that..."
+
+    SearchRequest:
+      type: object
+      required:
+        - query
+      properties:
+        query:
+          type: string
+          description: The search query
+          example: "control systems in humanoid robots"
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 20
+          default: 5
+          description: Maximum number of results to return
+        filters:
+          type: object
+          properties:
+            content_type:
+              type: array
+              items:
+                type: string
+                enum: [chapter, section, subsection]
+            hierarchy_path:
+              type: string
+              description: Filter by hierarchical path
+
+    SearchResponse:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContentHit'
+        total_hits:
+          type: integer
+          description: Total number of matching results
+        query_id:
+          type: string
+          format: uuid
+          description: ID of the search query
+
+    ContentHit:
+      type: object
+      properties:
+        content_id:
+          type: string
+          format: uuid
+          description: ID of the content
+        title:
+          type: string
+          description: Title of the content
+        hierarchy_path:
+          type: string
+          description: Hierarchical path of the content
+        url:
+          type: string
+          description: URL to the content
+        content_preview:
+          type: string
+          description: Preview of the content
+        relevance_score:
+          type: number
+          format: float
+          minimum: 0.0
+          maximum: 1.0
+          description: Relevance score of the content
+
+    ConversationSummary:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Conversation ID
+        turn_number:
+          type: integer
+          description: Turn number in the session
+        user_query:
+          type: string
+          description: The user's query
+        response_preview:
+          type: string
+          description: Preview of the response
+        timestamp:
+          type: string
+          format: date-time
+          description: When the conversation occurred
+
+    ConversationDetail:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Conversation ID
+        session_id:
+          type: string
+          format: uuid
+          description: Session ID
+        turn_number:
+          type: integer
+          description: Turn number in the session
+        user_query:
+          $ref: '#/components/schemas/ChatRequest'
+        chat_response:
+          $ref: '#/components/schemas/ChatResponse'
+        timestamp:
+          type: string
+          format: date-time
+          description: When the conversation occurred
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              description: Error code
+            message:
+              type: string
+              description: Error message
+            details:
+              type: object
+              description: Additional error details
+
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'

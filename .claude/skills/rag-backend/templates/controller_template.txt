@@ -1,0 +1,102 @@
+import os
+import uuid
+from fastapi import HTTPException
+from qdrant_client.http import models
+from src.lib.configs import env_config
+from src.lib.vectordb_connection import get_qdrant_client
+from src.lib.google_embedding import embed_text
+from src.lib.chunker import chunk_markdown
+from agents import Agent,Runner,RunConfig,FunctionTool,function_tool,enable_verbose_stdout_logging,ModelSettings,RunContextWrapper,handoff
+
+async def process_documents(folder_path: str):
+    try:
+        client = get_qdrant_client()
+        all_files = []
+
+        # recursively get all md files
+        for root, dirs, files in os.walk(folder_path):
+            for f in files:
+                if f.endswith(".md") or f.endswith(".txt"):
+                    all_files.append(os.path.join(root, f))
+
+        if not all_files:
+            return {"message": "No markdown files found."}
+
+        for file_path in all_files:
+            with open(file_path, "r", encoding="utf-8") as f:
+                text = f.read()
+
+            chunks = chunk_markdown(text)
+
+            for i, chunk in enumerate(chunks):
+                embedding = embed_text(chunk)
+
+                client.upsert(
+                    collection_name=env_config.collection_name,
+                    points=[
+                        models.PointStruct(
+                            id=str(uuid.uuid4()),
+                            vector=embedding,
+                            payload={
+                                "file_path": file_path,
+                                "chunk_index": i,
+                                "chunk_text": chunk
+                            }
+                        )
+                    ]
+                )
+
+        return {"status": "success", "files_processed": len(all_files)}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+
+@function_tool()
+async def run_query(query: str):
+    try:
+        client = get_qdrant_client()
+        embedding = embed_text(query)
+
+        search = client.search(
+            collection_name=env_config.collection_name,
+            query_vector=embedding,
+            limit=5
+        )
+
+        return {
+            "results": [
+                {
+                    "score": r.score,
+                    "file_path": r.payload.get("file_path"),
+                    "chunk_text": r.payload.get("chunk_text")
+                }
+                for r in search
+            ]
+        }
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+async def handle_query_operation(agent_config,query):
+    # print(agent_config)
+    # enable_verbose_stdout_logging()
+    # # return {query}
+    runConfig = RunConfig(
+        model=agent_config.model(),
+        model_provider= agent_config.client(),
+        # tracing_disabled=True,
+    )
+
+    starting_agent = Agent(
+        name="Todo Agent",
+        instructions=Write by yourself best instructions as i mentioned in secification,
+        # tools=[run_query]
+        
+        
+    )
+
+    result = await Runner.run(
+        starting_agent=starting_agent,input = query,run_config=runConfig
+    )
+    return result.final_output
+    # return "Hello" 
