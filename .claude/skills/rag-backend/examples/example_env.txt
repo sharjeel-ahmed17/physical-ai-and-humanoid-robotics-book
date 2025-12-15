@@ -1,0 +1,8 @@
+qdrant_url=
+qdrant_api_key=
+qdrant_collection_name=
+openrouter_api=
+openrouter_url=
+openrouter_model_name=
+google_api_key=
+embedding_model=

@@ -1,0 +1,80 @@
+# Textbook API Contract
+
+## Purpose
+This API contract defines potential endpoints for future enhancements to the Physical AI & Humanoid Robotics textbook, such as search functionality, user progress tracking, or interactive features.
+
+## Endpoints
+
+### GET /api/search
+**Description**: Search across textbook content
+**Parameters**:
+- query (string): Search term
+- limit (number, optional): Number of results to return (default: 10)
+- module (string, optional): Filter by specific module
+
+**Response**:
+```json
+{
+  "results": [
+    {
+      "id": "string",
+      "title": "string",
+      "content_preview": "string",
+      "url": "string",
+      "module": "string",
+      "relevance_score": "number"
+    }
+  ],
+  "total": "number"
+}
+```
+
+### GET /api/textbook-structure
+**Description**: Get the complete structure of the textbook
+**Response**:
+```json
+{
+  "course": {
+    "title": "Physical AI & Humanoid Robotics",
+    "modules": [
+      {
+        "id": "module-1-ros2",
+        "title": "The Robotic Nervous System (ROS 2)",
+        "weeks": [
+          {
+            "number": 1,
+            "title": "Introduction to Physical AI",
+            "chapters": [
+              {
+                "id": "chapter-1-1",
+                "title": "Foundations of Physical AI",
+                "url": "/modules/module-1-ros2/week1-2-intro"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "hardware_requirements": [
+      {
+        "id": "digital-twin-workstation",
+        "title": "Digital Twin Workstation",
+        "url": "/docs/hardware-requirements/digital-twin-workstation",
+        "category": "workstation"
+      },
+      {
+        "id": "physical-ai-edge-kit",
+        "title": "Physical AI Edge Kit",
+        "url": "/docs/hardware-requirements/physical-ai-edge-kit",
+        "category": "edge_device"
+      },
+      {
+        "id": "robot-lab-options",
+        "title": "Robot Lab Options",
+        "url": "/docs/hardware-requirements/robot-lab-options",
+        "category": "lab_setup"
+      }
+    ]
+  }
+}
+```
