@@ -15,7 +15,10 @@
       "Bash(python -c \"from src.api.main import app; print(''Application imported successfully'')\")",
       "Bash(python -m uvicorn src.api.main:app --host 0.0.0.0 --port 8000)",
       "Bash(python test_openrouter_config.py)",
-      "Bash(curl -X POST http://localhost:8000/chat/chat -H \"Content-Type: application/json\" -d \"{\"\"query\"\": \"\"What is Physical AI?\"\", \"\"session_id\"\": \"\"test-session\"\", \"\"query_mode\"\": \"\"book-wide\"\"}\")"
+      "Bash(curl -X POST http://localhost:8000/chat/chat -H \"Content-Type: application/json\" -d \"{\"\"query\"\": \"\"What is Physical AI?\"\", \"\"session_id\"\": \"\"test-session\"\", \"\"query_mode\"\": \"\"book-wide\"\"}\")",
+      "Bash(npx docusaurus build)",
+      "Bash(npm install)",
+      "Bash(npx serve build)"
     ]
   }
 }
