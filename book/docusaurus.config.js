@@ -13,7 +13,7 @@ const config = {
   url: 'https://sharjeel-ahmed17.github.io',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub Pages, this is usually '/<project-name>/'
-  baseUrl: '/physical-ai-and-humanoid-robotics-book/',
+  baseUrl: '/',
 
   // GitHub pages deployment config.
   organizationName: 'sharjeel-ahmed17', // Usually your GitHub org/user name.
