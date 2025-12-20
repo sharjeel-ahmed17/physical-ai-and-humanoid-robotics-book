@@ -15,26 +15,44 @@ const ChatWidget = () => {
   useEffect(() => {
     const initializeClient = async () => {
       try {
+        console.log('Initializing chat client...');
         const health = await chatClient.checkHealth();
+        console.log('Health check response:', health);
+
         if (health.success) {
+          console.log('Chat client is ready!');
           setIsClientReady(true);
-          // Load conversation history
-          const history = await chatClient.getConversationHistory();
-          if (history.success) {
-            // Convert history to our message format
-            // For now, we'll just initialize with an empty message history
-            setMessages([
-              {
-                role: 'assistant',
-                content: 'Hello! I\'m your AI assistant for the Physical AI & Humanoid Robotics book. Ask me anything about the book content!',
-                timestamp: new Date().toISOString()
-              }
-            ]);
-          }
+          // Initialize with welcome message
+          setMessages([
+            {
+              role: 'assistant',
+              content: 'Hello! I\'m your AI assistant for the Physical AI & Humanoid Robotics book. Ask me anything about the book content!',
+              timestamp: new Date().toISOString()
+            }
+          ]);
+        } else {
+          console.error('Health check failed:', health.error);
+          setIsClientReady(false);
+          // Show error message but allow user to try
+          setMessages([
+            {
+              role: 'assistant',
+              content: 'Connection to the chat service is unavailable. The service may be starting up. Please wait a moment and try sending a message.',
+              timestamp: new Date().toISOString()
+            }
+          ]);
         }
       } catch (error) {
         console.error('Failed to initialize chat client:', error);
         setIsClientReady(false);
+        // Show error message but allow retry
+        setMessages([
+          {
+            role: 'assistant',
+            content: 'Unable to connect to the chat service. Please ensure the backend server is running on http://localhost:8000',
+            timestamp: new Date().toISOString()
+          }
+        ]);
       }
     };
 
@@ -42,17 +60,8 @@ const ChatWidget = () => {
   }, []);
 
   const handleSendMessage = async (messageData) => {
-    if (!isClientReady) {
-      setMessages(prev => [
-        ...prev,
-        {
-          role: 'assistant',
-          content: 'Sorry, the chat service is not available right now. Please try again later.',
-          timestamp: new Date().toISOString()
-        }
-      ]);
-      return;
-    }
+    // Try to send message even if health check failed initially
+    // The backend might be ready now
 
     // Add user message to the conversation
     const userMessage = {
@@ -75,6 +84,10 @@ const ChatWidget = () => {
       );
 
       if (response.success) {
+        console.log('Message sent successfully:', response);
+        // Mark client as ready since we got a successful response
+        setIsClientReady(true);
+
         // Add assistant response to the conversation
         // Extract content from the response based on backend format
         let content = 'I received your message but there was an issue generating a response.';
@@ -94,10 +107,11 @@ const ChatWidget = () => {
 
         setMessages(prev => [...prev, assistantMessage]);
       } else {
+        console.error('Message send failed:', response);
         // Add error message to the conversation
         const errorMessage = {
           role: 'assistant',
-          content: `Sorry, I couldn't process your request: ${response.error}`,
+          content: `Sorry, I couldn't process your request. ${response.error || 'Please check if the backend server is running.'}`,
           timestamp: new Date().toISOString()
         };
 

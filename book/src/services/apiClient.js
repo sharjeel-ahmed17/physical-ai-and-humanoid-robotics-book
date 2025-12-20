@@ -2,9 +2,14 @@ import axios from 'axios';
 
 class ApiClient {
   constructor(baseURL) {
-    // For Docusaurus, we'll use a default URL since process.env may not be available
-    // The backend is running on port 8001
-    const defaultBaseURL = 'http://localhost:8000';
+    // For production, use Hugging Face backend
+    // For local development, use localhost
+    const envBaseURL = typeof window !== 'undefined'
+      ? window.REACT_APP_API_BASE_URL
+      : process.env.REACT_APP_API_BASE_URL;
+
+    // Default to Hugging Face backend for production
+    const defaultBaseURL = envBaseURL || 'https://sharjeel17-chatbot.hf.space';
 
     this.client = axios.create({
       baseURL: baseURL || defaultBaseURL,
