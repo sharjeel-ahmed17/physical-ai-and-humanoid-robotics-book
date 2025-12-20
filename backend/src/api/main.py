@@ -7,7 +7,7 @@ import logging
 from ..config.settings import settings
 from ..database.database import init_db
 from ..utils.logging import setup_logging
-from ..utils.gemini_agents_provider import validate_no_openai_key
+from ..utils.gemini_agents_provider import validate_no_openai_key, configure_global_gemini_provider
 from .endpoints import chat, content, conversations
 from .models import HealthCheckResponse
 from datetime import datetime
@@ -24,6 +24,10 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     # Validate that no OpenAI API key is present
     validate_no_openai_key()
     logging.info("Validated no OpenAI API key is present")
+
+    # Configure the global Gemini provider to monkey-patch the OpenAI client
+    configure_global_gemini_provider()
+    logging.info("Configured global Gemini provider")
 
     logging.info("Initializing database...")
     init_db()
@@ -44,9 +48,16 @@ app = FastAPI(
 )
 
 # Add CORS middleware
+# Allow requests from Vercel frontend and local development
+allowed_origins = [
+    "https://physical-ai-and-humanoid-robotics-b-six.vercel.app",  # Vercel production
+    "http://localhost:3000",  # Local development
+    "http://localhost:3001",  # Local development (alternate port)
+]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # In production, specify exact origins
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

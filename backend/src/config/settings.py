@@ -10,8 +10,9 @@ class Settings(BaseSettings):
     api_workers: int = 1
     debug: bool = False
 
-    # Database Settings
-    database_url: str
+    # Database Settings (Optional for stateless deployment)
+    database_url: Optional[str] = None
+    use_database: bool = Field(default=True, alias="USE_DATABASE")
 
     # Qdrant Settings
     qdrant_url: str
