@@ -48,16 +48,9 @@ app = FastAPI(
 )
 
 # Add CORS middleware
-# Allow requests from Vercel frontend and local development
-allowed_origins = [
-    "https://physical-ai-and-humanoid-robotics-b-six.vercel.app",  # Vercel production
-    "http://localhost:3000",  # Local development
-    "http://localhost:3001",  # Local development (alternate port)
-]
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=allowed_origins,
+    allow_origins=["*"],  # In production, specify exact origins
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
