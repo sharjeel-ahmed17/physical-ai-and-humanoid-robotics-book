@@ -18,7 +18,11 @@
       "Bash(curl -X POST http://localhost:8000/chat/chat -H \"Content-Type: application/json\" -d \"{\"\"query\"\": \"\"What is Physical AI?\"\", \"\"session_id\"\": \"\"test-session\"\", \"\"query_mode\"\": \"\"book-wide\"\"}\")",
       "Bash(npx docusaurus build)",
       "Bash(npm install)",
-      "Bash(npx serve build)"
+      "Bash(npx serve build)",
+      "Bash(python -c \"import uvicorn; from src.api.main import app; uvicorn.run\\(app, host=''0.0.0.0'', port=8001\\)\")",
+      "Bash(curl -X GET http://localhost:8001/health)",
+      "Bash(timeout 5 type:*)",
+      "Bash(curl:*)"
     ]
   }
 }
