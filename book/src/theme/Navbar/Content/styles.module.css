@@ -1,0 +1,14 @@
+.navbarContentWrapper {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.navbarAuth {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+  padding-left: 1rem;
+}

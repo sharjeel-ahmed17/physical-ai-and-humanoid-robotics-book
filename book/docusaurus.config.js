@@ -66,6 +66,21 @@ const config = {
         getClientModules() {
           return [require.resolve('./src/theme/Root')];
         },
+        configureWebpack(config, isServer) {
+          const webpack = require('webpack');
+          return {
+            plugins: [
+              new webpack.DefinePlugin({
+                'process.env.REACT_APP_AUTH_API_BASE_URL': JSON.stringify(
+                  process.env.REACT_APP_AUTH_API_BASE_URL || 'http://localhost:5000'
+                ),
+                'process.env.REACT_APP_API_BASE_URL': JSON.stringify(
+                  process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000'
+                ),
+              }),
+            ],
+          };
+        },
       };
     },
   ],
@@ -91,6 +106,10 @@ const config = {
           {
             href: 'https://github.com/sharjeel-ahmed17/physical-ai-and-humanoid-robotics-book',
             label: 'GitHub',
+            position: 'right',
+          },
+          {
+            type: 'custom-navbarAuth',
             position: 'right',
           },
         ],

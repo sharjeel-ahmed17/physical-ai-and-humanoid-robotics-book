@@ -130,6 +130,56 @@ html {
   scroll-behavior: smooth;
 }
 
+/* Welcome Message Styles */
+.welcomeMessage {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border-radius: 50px;
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+  color: white;
+  animation: slideDown 0.5s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.waveEmoji {
+  font-size: 1.5rem;
+  animation: wave 0.6s ease-in-out infinite alternate;
+}
+
+@keyframes wave {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(20deg);
+  }
+}
+
+.skillBadge {
+  margin-left: 0.5rem;
+  padding: 0.25rem 0.75rem;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
   .buttons {
@@ -142,5 +192,14 @@ html {
 
   .card {
     margin-bottom: 1rem;
+  }
+
+  .welcomeMessage {
+    font-size: 1rem;
+    padding: 0.5rem 1rem;
+  }
+
+  .skillBadge {
+    font-size: 0.75rem;
   }
 }

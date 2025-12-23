@@ -1,7 +1,6 @@
 // Better Auth configuration for user authentication with background profiling
 import { betterAuth } from 'better-auth';
-import { drizzleAdapter } from '@better-auth/drizzle-adapter';
-import { env } from '../../src/config/env';
+import { env } from '../src/config/env';
 
 // Validate that required environment variables are set
 if (!process.env.AUTH_SECRET && !env.AUTH_SECRET) {
@@ -9,139 +8,26 @@ if (!process.env.AUTH_SECRET && !env.AUTH_SECRET) {
 }
 
 if (!process.env.DATABASE_URL) {
-  console.warn('DATABASE_URL environment variable is not set');
+  console.warn('DATABASE_URL environment variable is not set - using in-memory storage (development only)');
 }
 
-// If using Neon database, you would import and configure the Neon adapter
-// import { neon } from 'pg';
-// const db = neon(process.env.DATABASE_URL!);
-
-// For now, using a generic database adapter setup
-// In a real implementation, you would use the appropriate adapter for your database
-// import { db } from './db'; // Your database instance
-
+// Basic Better Auth configuration without database for now
 export const auth = betterAuth({
-  database: drizzleAdapter(/* db, {
-    // User schema customization for background profiling
-    user: {
-      // Add custom fields for background data
-      software_experience: 'jsonb',
-      hardware_familiarity: 'jsonb',
-      skill_level: 'text',
-      years_experience: 'integer',
-      interests: 'jsonb',
-      learning_path: 'text',
-    }
-  } */), // Placeholder - actual adapter would be configured based on your database
   secret: process.env.AUTH_SECRET || env.AUTH_SECRET,
   emailAndPassword: {
     enabled: true,
-    requireEmailVerification: true, // Enable for production security
-  },
-  account: {
-    accountLinking: {
-      enabled: true,
-    },
+    requireEmailVerification: false, // Disable for development
   },
   session: {
-    expires: 24 * 60 * 60, // 24 hours (reduced from 7 days for security)
+    expiresIn: 24 * 60 * 60, // 24 hours in seconds
     updateAge: 60 * 60, // Update session every hour
-    cookie: {
-      // Secure cookie settings
-      secure: process.env.NODE_ENV === 'production', // Use HTTPS in production
-      sameSite: 'strict', // Prevent CSRF
-      httpOnly: true, // Prevent XSS
-    },
-  },
-  socialProviders: {
-    // Add social providers if needed
-  },
-  email: {
-    // Configure email settings
-    from: process.env.FROM_EMAIL || 'noreply@yourdomain.com',
-    // Enable rate limiting for emails
-    maxFrequency: 5, // Max 5 emails per hour per user
-  },
-  // Custom user fields for background data collection
-  user: {
-    additionalFields: {
-      software_experience: {
-        type: 'string', // In practice, this would be JSON, but storing as string for compatibility
-        required: false,
-        defaultValue: '[]'
-      },
-      hardware_familiarity: {
-        type: 'string', // In practice, this would be JSON, but storing as string for compatibility
-        required: false,
-        defaultValue: '[]'
-      },
-      skill_level: {
-        type: 'string',
-        required: false,
-        defaultValue: 'beginner'
-      },
-      years_experience: {
-        type: 'number',
-        required: false,
-        defaultValue: 0
-      },
-      interests: {
-        type: 'string', // In practice, this would be JSON, but storing as string for compatibility
-        required: false,
-        defaultValue: '[]'
-      },
-      learning_path: {
-        type: 'string',
-        required: false,
-        defaultValue: ''
-      }
+    cookieCache: {
+      enabled: true,
+      maxAge: 60 * 60 // 1 hour cache
     }
   },
-  // Security configurations
   advanced: {
-    generateUserId: () => `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-    // Enable security headers
-    send2FAOnSignIn: false, // Enable if 2FA is required
-  },
-  // Rate limiting
-  rateLimit: {
-    window: 60 * 1000, // 1 minute
-    max: 10, // 10 requests per minute
-    enabled: true,
-  },
-  // Account security
-  account: {
-    accountLockout: {
-      duration: 15, // 15 minutes
-      attempts: 5, // After 5 failed attempts
-    },
-    twoFactor: {
-      enabled: false, // Enable in production if needed
-      issuer: 'Physical AI & Humanoid Robotics Textbook',
-    },
-  },
-  // Password requirements
-  password: {
-    enabled: true,
-    // Enhanced password requirements for security
-    minLength: 8,
-    requireSpecialChars: true,
-    requireNumbers: true,
-    requireUppercase: true,
-    requireLowercase: true,
-  },
-  // Security headers and protections
-  security: {
-    // Enable CSRF protection
-    csrf: true,
-    // Enable XSS protection
-    xss: true,
-    // Additional security measures
-    bruteForceProtection: {
-      enabled: true,
-      windowMs: 15 * 60 * 1000, // 15 minutes
-      maxAttempts: 5,
-    },
+    generateId: () => `user_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
   },
 });
 
@@ -167,11 +53,5 @@ export const validateAuthConfig = () => {
 // Run validation on config initialization
 validateAuthConfig();
 
-// Export additional auth utilities if needed
-export const {
-  signIn,
-  signOut,
-  signUp,
-  getSession,
-  updateSession
-} = auth;
+// Export auth instance
+export default auth;

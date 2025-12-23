@@ -3,13 +3,24 @@ import clsx from 'clsx';
 import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
+import { useAuth } from '../contexts/AuthContext';
 import styles from './index.module.css';
 
 function HomepageHeader() {
   const {siteConfig} = useDocusaurusContext();
+  const { user, isAuthenticated } = useAuth();
+
   return (
     <header className={clsx('hero hero--primary', styles.heroBanner)}>
       <div className="container">
+        {isAuthenticated() && user && (
+          <div className={styles.welcomeMessage}>
+            <span className={styles.waveEmoji}>👋</span> Welcome back, <strong>{user.email?.split('@')[0]}</strong>!
+            {user.skill_level && (
+              <span className={styles.skillBadge}>{user.skill_level}</span>
+            )}
+          </div>
+        )}
         <h1 className="hero__title">{siteConfig.title}</h1>
         <p className="hero__subtitle">{siteConfig.tagline}</p>
         <div className={styles.buttons}>
@@ -23,6 +34,13 @@ function HomepageHeader() {
             to="/docs/modules/module-1-ros2/week1-2-intro">
             Explore Modules
           </Link>
+          {!isAuthenticated() && (
+            <Link
+              className="button button--outline button--lg margin-left--md"
+              to="/auth/signup">
+              Create Account
+            </Link>
+          )}
         </div>
       </div>
     </header>
